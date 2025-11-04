@@ -1,37 +1,31 @@
-// index.js
+// index.js (Режим Polling - Коректна версія для CodeSandbox)
 
-require('dotenv').config(); // Завантажуємо BOT_TOKEN з .env
-
+require('dotenv').config(); 
 const TelegramBot = require('node-telegram-bot-api');
 
-// Токен бота з .env
-const token = process.env.BOT_TOKEN;
+// Токен береться зі змінних оточення BOT_TOKEN
+const token = process.env.BOT_TOKEN; 
 
-// Створюємо екземпляр бота
-const bot = new TelegramBot(token, { polling: true });
+// --- 1. СТВОРЕННЯ ЕКЗЕМПЛЯРУ БОТА З POLLING ---
+// !!! ПОЛІНГ: Режим опитування, єдиний, що може працювати тут !!!
+const bot = new TelegramBot(token, { polling: true }); 
 
-// --- Конфігурація контенту ---
-const aboutText = "Я — Node.js розробник-початківець. Це мій перший Telegram-бот, створений в рамках курсу Foxminded.";
+console.log('Bot is running in Polling mode...');
+
+// --- 2. СТАТИЧНІ ДАНІ ---
+const aboutText = "Я — Node.js розробник-початківець. Це мій перший Telegram-бот, створений в рамках курсу.";
 const socialLinks = [
-    { text: 'GitHub', url: 'https://github.com/...' },
-    { text: 'LinkedIn', url: 'https://linkedin.com/...' }
-    // Додай свої реальні посилання
+    { text: 'GitHub', url: 'https://github.com/1lyshkacomp' }, 
+    { text: 'LinkedIn', url: 'http://www.linkedin.com/in/iIliia-andriienko-918b8b93/' }
 ];
 
-const commandsList = [
-    { command: '/about', description: 'Коротка інформація про мене' },
-    { command: '/links', description: 'Список соціальних мереж' },
-    { command: '/help', description: 'Показати список команд' }
-];
-
-// --- Обробники команд ---
+// --- 3. ОБРОБНИКИ КОМАНД ---
 
 // Обробка /start та /help
 bot.onText(/\/start|\/help/, (msg) => {
     const chatId = msg.chat.id;
-    const welcomeMessage = "Вітаю! Я — демонстраційний бот. Використовуйте кнопки нижче, щоб дізнатися про мене більше:";
+    const welcomeMessage = "Вітаю! Доступні команди:";
 
-    // Створюємо клавіатуру (Reply Markup)
     const replyMarkup = {
         keyboard: [
             [{ text: '/about' }],
@@ -52,9 +46,8 @@ bot.onText(/\/about/, (msg) => {
 // Обробка /links
 bot.onText(/\/links/, (msg) => {
     const chatId = msg.chat.id;
-    let linksMessage = "Мої профілі:\n";
+    let linksMessage = "Мої профілі:";
 
-    // Створюємо інлайн-клавіатуру для посилань (краще, ніж просто текст)
     const inlineKeyboard = {
         inline_keyboard: socialLinks.map(link => [{ text: link.text, url: link.url }])
     };
@@ -62,10 +55,8 @@ bot.onText(/\/links/, (msg) => {
     bot.sendMessage(chatId, linksMessage, { reply_markup: inlineKeyboard });
 });
 
-
-// Обробка помилок
+// Обробка помилок Polling
 bot.on('polling_error', (error) => {
-    console.error("Polling Error:", error.code);
+    // Виводить помилки, але не зупиняє програму через дрібні збої
+    console.error("Polling Error:", error.code, error.message);
 });
-
-console.log('Bot is running...');
